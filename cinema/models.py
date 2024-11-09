@@ -1,6 +1,5 @@
 import pathlib
 import uuid
-from tkinter import image_names
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -39,12 +38,12 @@ class Actor(models.Model):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-    def movie_image_path(self, movie: "Movie", filename: str) -> pathlib.Path:
-        filename = (
-            f"{slugify(movie.title)}-{uuid.uuid4()}"
-            f"{pathlib.Path(filename).suffix}"
-        )
-        return pathlib.Path("upload/movies/") / pathlib.Path(filename)
+def movie_image_path(movie: "Movie", filename: str) -> pathlib.Path:
+    filename = (
+        f"{slugify(movie.title)}-{uuid.uuid4()}"
+        f"{pathlib.Path(filename).suffix}"
+    )
+    return pathlib.Path("upload/movies/") / pathlib.Path(filename)
 
 
 class Movie(models.Model):
@@ -53,7 +52,7 @@ class Movie(models.Model):
     duration = models.IntegerField()
     genres = models.ManyToManyField(Genre)
     actors = models.ManyToManyField(Actor)
-    image = models.ImageField(null=True, upload_to="movie_image_path")
+    image = models.ImageField(null=True, upload_to=movie_image_path)
 
     class Meta:
         ordering = ["title"]
